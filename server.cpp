@@ -42,21 +42,18 @@ void MessageServer::manage(){
 	for(;;){
                 sf::Socket::Status status = this->message_socket.receive(this->data);
 
-            if (status == sf::Socket::Done)
-            {
-               if(this->data >> this->current_name >> this->current_message)
-		       std::cout << "Data extracted successfully" << std::endl;
-               std::cout << this->current_name << ": " << this->current_message << std::endl;
-	       this->data.clear();
-		//this->message_socket.disconnect();
+            if (status == sf::Socket::Done){
+            	if(!(this->data >> this->current_name >> this->current_message))
+		       std::cout << "Data extracted unsuccessfully" << std::endl;
+               	std::cout << this->current_name << ": " << this->current_message << std::endl;
+	       	this->data.clear();
+	//	this->message_socket.disconnect();
             }
-
-            if (status == sf::Socket::Disconnected)
-            {
-                std::cout << "Client disconnected" << std::endl;
+            if (status == sf::Socket::Disconnected){
+            //    std::cout << "Client disconnected" << std::endl;
                 break;
             }
-	    }
+	}
 }
 	    
 void MessageServer::sendUpdates(){

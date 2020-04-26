@@ -8,19 +8,19 @@ public:
 	std::string message;
 	sf::TcpSocket socket;
 	sf::Packet pack;
-	bool connect();
+	void connect();
 	void scan();
 	void registration();
 	void makePack();
 	void run();
 };
 
-bool Client::connect(){
+void Client::connect(){
 	if(this->socket.connect("127.0.0.1", 53000) != sf::Socket::Done){
 		std::cout << "Connnection failed" << std::endl;
-		return false;
+	//	return false;
 	}
-	return true;
+	//return true;
 }
 
 void Client::scan(){
@@ -36,17 +36,19 @@ void Client::makePack(){
 }
 
 void Client::run(){
-	if(this->connect()){
+//	if(this->connect()){
 		this->registration();
 		for(;;){
 			this->scan();
+			this->connect();
 			this->pack.clear();
 			this->makePack();
 			sf::Socket::Status status = this->socket.send(this->pack);
 			if (status != sf::Socket::Done)
 				std::cout << "Message has not been sent!" << std::endl;
+			this->socket.disconnect();
 		}
-	}
+//	}
 }
 
 int main(){
