@@ -9,8 +9,9 @@ class MessageServer{
 		sf::TcpSocket chat_socket; //WHOLE CHAT
 		std::string current_name;
 		std::string current_message;
+		sf::Packet data;
 		void startServer();
-		void connect();
+		bool connect();
 		void manage();
 		void sendUpdates();
 	};
@@ -21,26 +22,32 @@ void MessageServer::startServer(){
 		return;
 	}
 	std::cout << "Server has been started working." << std::endl;
+	for (;;){
+		if (this->connect())    
+			this->manage();
+		else
+			break;
+	}
 }
 
-void MessageServer::connect(){
+bool MessageServer::connect(){
 	 if (this->listener.accept(this->message_socket) != sf::Socket::Done) {
             std::cout << "Can not accept connection" << std::endl;
-            return;
+            return false;
         }
+	return true;
 }
 
 void MessageServer::manage(){
-	this->connect();    
 	for(;;){
-		sf::Packet data;
-            
-                sf::Socket::Status status = this->message_socket.receive(data);
+                sf::Socket::Status status = this->message_socket.receive(this->data);
 
             if (status == sf::Socket::Done)
             {
-                data >> this->current_name >> this->current_message;
-                std::cout << this->current_name << ": " << this->current_message << std::endl;
+               if(this->data >> this->current_name >> this->current_message)
+		       std::cout << "Data extracted successfully" << std::endl;
+               std::cout << this->current_name << ": " << this->current_message << std::endl;
+	       this->data.clear();
 		//this->message_socket.disconnect();
             }
 
@@ -108,9 +115,6 @@ int main()
 
 	MessageServer server;
 	server.startServer();
-	for (;;){
-		server.manage();
-	}
 
 
 }

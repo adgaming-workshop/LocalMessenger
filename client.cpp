@@ -40,8 +40,9 @@ void Client::run(){
 		this->registration();
 		for(;;){
 			this->scan();
+			this->pack.clear();
 			this->makePack();
-			sf::Socket::Status status = socket.send(this->pack);
+			sf::Socket::Status status = this->socket.send(this->pack);
 			if (status != sf::Socket::Done)
 				std::cout << "Message has not been sent!" << std::endl;
 		}
